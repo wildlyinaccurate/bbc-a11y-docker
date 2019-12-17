@@ -1,15 +1,17 @@
 FROM node
-MAINTAINER joseph.wynn@bbc.co.uk
+MAINTAINER joseph@wildlyinaccurate.com
+
+ENV DISPLAY=:99.0
 
 RUN apt-get update && \
-    apt-get install -y libgtk2.0-0 libgconf-2-4 libasound2 libxtst6 libxss1 libnss3 xvfb && \
+    apt-get -f install && \
+    apt-get -y install wget gnupg2 apt-utils libgconf-2-4 xvfb libgtk-3-0 libxss1 libnss3 libasound2 && \
     apt-get clean
 
-# Install the latest straight from GitHub
-RUN npm install --global git+https://github.com/bbc/bbc-a11y.git
+WORKDIR /ws
 
-RUN rm /usr/local/bin/bbc-a11y
+RUN npm install bbc-a11y
 
-ADD bbc-a11y /usr/local/bin/bbc-a11y
+COPY start.sh /ws/start.sh
 
-ENTRYPOINT ["bbc-a11y"]
+ENTRYPOINT ["/ws/start.sh"]
